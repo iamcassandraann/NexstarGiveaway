@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prize Wheel Selector</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      color: white;
+      overflow: hidden;
+    }
+
+    .container {
+      width: 100vw;
+      height: 100vh;
+      aspect-ratio: 9 / 16;
+      background-color: #111;
+      border: 5px solid gold;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .logo {
+      max-width: 60%;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      color: gold;
+      font-size: 1.8em;
+      margin: 0 0 10px 0;
+      text-align: center;
+    }
+
+    .wheel {
+      width: 80vw;
+      height: 80vw;
+      max-height: 60vh;
+      background: conic-gradient(
+        gold 0% 25%,
+        gray 25% 50%,
+        white 50% 75%,
+        gold 75% 100%
+      );
+      border: 4px solid white;
+      border-radius: 50%;
+      position: relative;
+      transition: transform 4s ease-out;
+    }
+
+    .pointer {
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 30px solid gold;
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    button {
+      background-color: gold;
+      color: black;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #result {
+      font-size: 1.5em;
+      margin-top: 10px;
+      color: white;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti-canvas"></canvas>
+  <div class="container">
+    <img src="nexstar-logo.png" alt="Nexstar Homes Logo" class="logo">
+    <h1>Nexstar Homes Giveaway</h1>
+    <div class="wheel" id="wheel">
+      <div class="pointer"></div>
+    </div>
+    <button onclick="spinWheel()">Spin</button>
+    <div id="result"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    const segments = [
+      "bustachick", "mrs.brookereed", "kolbyfresh", "cherismith.azrealtor",
+      "klymitroofing", "Kimberly Ruebel Glasgow", "mtkmama13", "jessappel",
+      "amandarae_the_realtor", "cincin005", "jamisonstclair", "lauxy10",
+      "dianakberky", "gbyzamarron", "mobrifer87", "jessymessy333",
+      "keevlourd", "_brendamaciass_", "calvindsmith", "kimberlysowens",
+      "ember_waves_f15", "tthesan", "maritsagtz", "coop.christensen",
+      "gini_b_changed", "Misti Hastings", "nicole_rodriguez_84", "lv2lvu",
+      "erks16_", "studio_rtv", "826traci", "kelsey_urbanchek",
+      "shariholder_realtor", "anndoucette", "josie.freesh", "itsonlysoto",
+      "danewillardsen", "b_wright16", "ro310", "lrpettitt",
+      "lala__rush", "delossantoss__", "roxiii_24jr", "pegnielsen",
+      "jamie_ann1", "miss_hernandez16"
+    ];
+
+    const winners = [];
+    const maxWinners = 5;
+    let angle = 0;
+
+    function spinWheel() {
+      if (winners.length >= maxWinners) {
+        document.getElementById("result").textContent = "All winners have been selected!";
+        return;
+      }
+
+      let availableSegments = segments.filter(name => !winners.includes(name));
+      const randomIndex = Math.floor(Math.random() * availableSegments.length);
+      const selected = availableSegments[randomIndex];
+      const segmentAngle = 360 / segments.length;
+      const indexInOriginal = segments.indexOf(selected);
+      const extraSpins = 5 * 360;
+      angle = extraSpins + (indexInOriginal * segmentAngle) + (segmentAngle / 2);
+
+      const wheel = document.getElementById("wheel");
+      wheel.style.transform = `rotate(${angle}deg)`;
+
+      setTimeout(() => {
+        document.getElementById("result").textContent = `🎉 ${selected} is a winner!`;
+        winners.push(selected);
+        fireConfetti();
+      }, 4000);
+    }
+
+    function fireConfetti() {
+      const duration = 2 * 1000;
+      const end = Date.now() + duration;
+
+      (function frame() {
+        confetti({
+          particleCount: 5,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ["#FFD700", "#FFFFFF", "#CCCCCC"]
+        });
+        confetti({
+          particleCount: 5,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ["#FFD700", "#FFFFFF", "#CCCCCC"]
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      })();
+    }
+  </script>
+</body>
+</html>
